@@ -9,5 +9,9 @@
     <ItemGroup>
       <ProjectReference Include="..\DirectoryService.Contracts\DirectoryService.Contracts.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="CSharpFunctionalExtensions" Version="3.6.0" />
+    </ItemGroup>
    
 </Project>
