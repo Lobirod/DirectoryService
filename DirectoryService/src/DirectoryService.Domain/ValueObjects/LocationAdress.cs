@@ -4,18 +4,33 @@ namespace DirectoryService.Domain.ValueObjects;
 
 public record LocationAdress
 {
-    private readonly List<LocationAdressPart> _locationAdressParts = [];
-    public IReadOnlyList<LocationAdressPart> LocationAdressParts => _locationAdressParts;
-    private LocationAdress(List<LocationAdressPart> locationAdressParts)
+    private const short MAX_LENGTH = 100;
+
+    public string Country { get; }
+    public string City { get; }
+    public string Street { get; }
+
+    private LocationAdress(
+        string country,
+        string city,
+        string street)
     {
-        _locationAdressParts = locationAdressParts;
+        Country = country;
+        City = city;
+        Street = street;
     }
 
-    public static Result<LocationAdress> Create(IEnumerable<LocationAdressPart> locationAdressParts)
+    public static Result<LocationAdress> Create(
+        string country,
+        string city,
+        string street)
     {
-        List<LocationAdressPart> locationAdress = locationAdressParts.ToList();
-        if (locationAdress.Count == 0)
-            return Result.Failure<LocationAdress>($"Список частей адреса должен содержать хотябы один элемент");
-        return new LocationAdress(locationAdress);
+        if (country.Length > MAX_LENGTH)
+            return Result.Failure<LocationAdress>($"Название страны не должен быть более {MAX_LENGTH} символов");
+        if (city.Length > MAX_LENGTH)
+            return Result.Failure<LocationAdress>($"Название города не должен быть более {MAX_LENGTH} символов");
+        if (street.Length > MAX_LENGTH)
+            return Result.Failure<LocationAdress>($"Название улицы не должен быть более {MAX_LENGTH} символов");
+        return new LocationAdress(country, city, street);
     }
 }
