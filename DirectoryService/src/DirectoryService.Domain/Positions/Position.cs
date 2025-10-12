@@ -1,25 +1,33 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Domain.DepartmentPositions;
+using DirectoryService.Domain.Positions.ValueObjects;
 
-namespace DirectoryService.Domain;
+namespace DirectoryService.Domain.Positions;
 
 public class Position
 {
-    private readonly List<DepartmentPosition> _departmentPosition = [];
+    private readonly List<DepartmentPosition> _departmentPositions = [];
+
+    //EF Core
+    private Position()
+    {
+
+    }
 
     private Position(
+        PositionId id,
         PositionName name,
         PositionDescription description,
         IEnumerable<DepartmentPosition> departmentPosition)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         Description = description;
         CreatedAt = DateTime.UtcNow;
-        _departmentPosition = departmentPosition.ToList();
+        _departmentPositions = departmentPosition.ToList();
     }
 
-    public Guid Id { get; private set; }
+    public PositionId Id { get; private set; }
 
     public PositionName Name { get; private set; }
 
@@ -29,15 +37,16 @@ public class Position
 
     public DateTime CreatedAt { get; private set; }
 
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
-    public IReadOnlyList<DepartmentPosition> DepartmentPosition => _departmentPosition;
+    public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
 
     public static Result<Position> Create(
+        PositionId id,
         PositionName name,
         PositionDescription description,
         IEnumerable<DepartmentPosition> departmentPosition)
     {
-        return new Position(name, description, departmentPosition);
+        return new Position(id, name, description, departmentPosition);
     }
 }

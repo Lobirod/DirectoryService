@@ -1,10 +1,15 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace DirectoryService.Domain.ValueObjects;
+namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record LocationTimezone
 {
-    private const int MAX_LENGTH = 100;
+    //EF Core
+    private LocationTimezone()
+    {
+
+    }
+
     public string Value { get; }
 
     private LocationTimezone(string value)
@@ -16,7 +21,7 @@ public record LocationTimezone
     {
         if (string.IsNullOrWhiteSpace(value))
             return Result.Failure<LocationTimezone>("Временная зона IANA не должна быть пустой");
-        if (value.Length > MAX_LENGTH)
+        if (value.Length > LengthConstants.LOCATION_TIMEZONE_MAX_LENGTH)
             return Result.Failure<LocationTimezone>($"Временная зона IANA  не корректна");
         var timezoneParts = value.Split("/");
         if (timezoneParts.Length != 2)

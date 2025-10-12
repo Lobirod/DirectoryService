@@ -1,7 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Domain.DepartmentLocations;
+using DirectoryService.Domain.DepartmentPositions;
+using DirectoryService.Domain.Departments.ValueObjects;
 
-namespace DirectoryService.Domain;
+namespace DirectoryService.Domain.Departments;
 
 
 public class Department
@@ -9,16 +11,23 @@ public class Department
     private readonly List<DepartmentLocation> _departmentLocations = [];
     private readonly List<DepartmentPosition> _departmentPositions = [];
 
+    //EF Core
+    private Department()
+    {
+
+    }
+
     private Department(
+        DepartmentId id,
         DepartmentName name,
         DepartmentIdentifier identifier,
         string path,
         short depth,
         IEnumerable<DepartmentLocation> locations,
         IEnumerable<DepartmentPosition> positions,
-        Guid? parentId = null)
+        DepartmentId? parentId = null)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         Identifier = identifier;
         Path = path;
@@ -29,13 +38,13 @@ public class Department
         ParentId = parentId;
     }
 
-    public Guid Id { get; private set; }
+    public DepartmentId Id { get; private set; }
 
     public DepartmentName Name { get; private set; }
 
     public DepartmentIdentifier Identifier { get; private set; }
 
-    public Guid? ParentId { get; private set; }
+    public DepartmentId? ParentId { get; private set; }
 
     public string Path { get; private set; }
 
@@ -45,21 +54,22 @@ public class Department
 
     public DateTime CreatedAt { get; private set; }
 
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
-    public IReadOnlyList<DepartmentLocation> DepartmentLocation => _departmentLocations;
+    public IReadOnlyList<DepartmentLocation> DepartmentLocations => _departmentLocations;
 
-    public IReadOnlyList<DepartmentPosition> DepartmentPosition => _departmentPositions;
+    public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
 
     public static Result<Department> Create(
+        DepartmentId id,
         DepartmentName name,
         DepartmentIdentifier identifier,
         string path,
         short depth,
         IEnumerable<DepartmentLocation> locations,
         IEnumerable<DepartmentPosition> positions,
-        Guid? parentId = null)
+        DepartmentId? parentId = null)
     {
-       return new Department(name, identifier, path, depth, locations, positions, parentId);
+       return new Department(id, name, identifier, path, depth, locations, positions, parentId);
     }
 }
