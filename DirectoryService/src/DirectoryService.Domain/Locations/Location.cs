@@ -1,27 +1,35 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Domain.DepartmentLocations;
+using DirectoryService.Domain.Locations.ValueObjects;
 
-namespace DirectoryService.Domain;
+namespace DirectoryService.Domain.Locations;
 
 public class Location
 {
-    private readonly List<DepartmentLocation> _departmentLocation = [];
+    private readonly List<DepartmentLocation> _departmentLocations = [];
+
+    //EF Core
+    private Location()
+    {
+
+    }
 
     private Location(
+        LocationId id,
         LocationName name,
         LocationAdress adress,
         LocationTimezone timezone,
         IEnumerable<DepartmentLocation> departmentLocation)
     {
-        Id = Guid.NewGuid();
+        Id = id;
         Name = name;
         Adress = adress;
         Timezone = timezone;
         CreatedAt = DateTime.UtcNow;
-        _departmentLocation = departmentLocation.ToList();
+        _departmentLocations = departmentLocation.ToList();
     }
 
-    public Guid Id { get; private set; }
+    public LocationId Id { get; private set; }
 
     public LocationName Name { get; private set; }
 
@@ -33,16 +41,17 @@ public class Location
 
     public DateTime CreatedAt { get; private set; }
 
-    public DateTime UpdatedAt { get; private set; }
+    public DateTime? UpdatedAt { get; private set; }
 
-    public IReadOnlyList<DepartmentLocation> DepartmentLocation => _departmentLocation;
+    public IReadOnlyList<DepartmentLocation> DepartmentLocations => _departmentLocations;
 
     public static Result<Location> Create(
+        LocationId id,
         LocationName name,
         LocationAdress adress,
         LocationTimezone timezone,
         IEnumerable<DepartmentLocation> departmentLocation)
     {
-        return new Location(name, adress, timezone, departmentLocation);
+        return new Location(id, name, adress, timezone, departmentLocation);
     }
 }
