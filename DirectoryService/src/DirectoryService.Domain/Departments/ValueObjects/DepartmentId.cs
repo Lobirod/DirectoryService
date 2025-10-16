@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Domain.Departments.ValueObjects;
+﻿namespace DirectoryService.Domain.ValueObjects;
 
 public record DepartmentId
 {
