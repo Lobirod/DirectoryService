@@ -13,7 +13,7 @@ public readonly struct LengthConstants
     public const int LOCATION_NAME_MIN_LENGTH = 3;
     public const int LOCATION_NAME_MAX_LENGTH = 120;
 
-    public const int LOCATION_ADRESS_MAX_LENGTH = 200;
+    public const int LOCATION_ADDRESS_MAX_LENGTH = 200;
 
     public const int LOCATION_TIMEZONE_MAX_LENGTH = 100;
 

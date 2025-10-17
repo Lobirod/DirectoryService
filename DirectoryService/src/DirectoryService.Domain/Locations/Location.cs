@@ -17,23 +17,21 @@ public class Location
     private Location(
         LocationId id,
         LocationName name,
-        LocationAdress adress,
-        LocationTimezone timezone,
-        IEnumerable<DepartmentLocation> departmentLocation)
+        LocationAddress address,
+        LocationTimezone timezone)
     {
         Id = id;
         Name = name;
-        Adress = adress;
+        Address = address;
         Timezone = timezone;
         CreatedAt = DateTime.UtcNow;
-        _departmentLocations = departmentLocation.ToList();
     }
 
     public LocationId Id { get; private set; }
 
     public LocationName Name { get; private set; }
 
-    public LocationAdress Adress { get; private set; }
+    public LocationAddress Address { get; private set; }
 
     public LocationTimezone Timezone { get; private set; }
 
@@ -48,10 +46,9 @@ public class Location
     public static Result<Location> Create(
         LocationId id,
         LocationName name,
-        LocationAdress adress,
-        LocationTimezone timezone,
-        IEnumerable<DepartmentLocation> departmentLocation)
+        LocationAddress address,
+        LocationTimezone timezone)
     {
-        return new Location(id, name, adress, timezone, departmentLocation);
+        return new Location(id, name, address, timezone);
     }
 }

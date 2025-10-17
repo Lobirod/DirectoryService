@@ -28,22 +28,22 @@ public class LocationConfiguration: IEntityTypeConfiguration<Location>
             .HasMaxLength(LengthConstants.LOCATION_NAME_MAX_LENGTH)
             .IsRequired();
 
-        builder.OwnsOne(l => l.Adress, ab =>
+        builder.OwnsOne(l => l.Address, ab =>
         {
-            ab.ToJson("adress");
+            ab.ToJson("address");
             ab.Property(l => l.Country)
                 .HasColumnName("country")
-                .HasMaxLength(LengthConstants.LOCATION_ADRESS_MAX_LENGTH)
+                .HasMaxLength(LengthConstants.LOCATION_ADDRESS_MAX_LENGTH)
                 .IsRequired();
 
             ab.Property(l => l.City)
                 .HasColumnName("city")
-                .HasMaxLength(LengthConstants.LOCATION_ADRESS_MAX_LENGTH)
+                .HasMaxLength(LengthConstants.LOCATION_ADDRESS_MAX_LENGTH)
                 .IsRequired();
 
             ab.Property(l => l.Street)
                 .HasColumnName("street")
-                .HasMaxLength(LengthConstants.LOCATION_ADRESS_MAX_LENGTH)
+                .HasMaxLength(LengthConstants.LOCATION_ADDRESS_MAX_LENGTH)
                 .IsRequired();
         });
 
