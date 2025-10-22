@@ -22,8 +22,6 @@ public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, Create
 
     public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
     {
-        var locationId = LocationId.CreateNew();
-
         var locationNameResult = LocationName.Create(command.Name);
         if (locationNameResult.IsFailure)
             return locationNameResult.Error.ToErrors();
@@ -43,14 +41,13 @@ public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, Create
         var locationTimezone = locationTimezoneResult.Value;
 
         var location = Location.Create(
-            locationId,
             locationName,
             locationAddress,
             locationTimezone).Value;
 
         await _locationsRepository.AddAsync(location, cancellationToken);
-        _logger.LogInformation("Location created with id {locationId}", locationId);
+        _logger.LogInformation("Location created with id {locationId}", location.Id);
 
-        return locationId.Value;
+        return location.Id.Value;
     }
 }

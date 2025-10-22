@@ -1,16 +1,12 @@
 ﻿using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
+using Shared;
 
 namespace DirectoryService.Domain.ValueObjects;
 
 public record DepartmentIdentifier
 {
-    //EF Core
-    private DepartmentIdentifier()
-    {
-
-    }
-
+    private static readonly Regex _identifierRegex = new("^[a-zA-Z]+$", RegexOptions.Compiled);
     public string Value { get; }
 
     private DepartmentIdentifier(string value)
@@ -18,27 +14,29 @@ public record DepartmentIdentifier
         Value = value;
     }
 
-    public static Result<DepartmentIdentifier> Create(string value)
+    public static Result<DepartmentIdentifier, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return Result.Failure<DepartmentIdentifier>("Идентификатор подразделения не должен быть пустым");
+            return Error.Validation(null, "Идентификатор подразделения не должен быть пустым");
 
         if (value.Length < LengthConstants.DEPARTMENT_IDENTIFIER_MIN_LENGTH)
         {
-            return Result.Failure<DepartmentIdentifier>(
+            return Error.Validation(
+                null,
                 $"Идентификатор подразделения не должен быть менее " +
                 $"{LengthConstants.DEPARTMENT_IDENTIFIER_MIN_LENGTH} символов");
         }
 
         if (value.Length > LengthConstants.DEPARTMENT_IDENTIFIER_MAX_LENGTH)
         {
-            return Result.Failure<DepartmentIdentifier>(
+            return Error.Validation(
+                null,
                 $"Идентификатор подразделения не должен быть более " +
                 $"{LengthConstants.DEPARTMENT_IDENTIFIER_MIN_LENGTH} символов");
         }
 
-        if(!Regex.IsMatch(value, @"[^a-zA-Z]"))
-            return Result.Failure<DepartmentIdentifier>($"Идентификатор подразделения должен быть только латиницей");
+        if(_identifierRegex.IsMatch(value) == false)
+            return Error.Validation(null, $"Идентификатор подразделения должен быть только латиницей");
 
         return new DepartmentIdentifier(value);
     }

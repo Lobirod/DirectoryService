@@ -15,18 +15,18 @@ public class LocationConfiguration: IEntityTypeConfiguration<Location>
         builder.HasKey(l => l.Id).HasName("pk_locations");
         builder.Property(l => l.Id)
             .HasConversion(
-                l => l.Value,
-                value => LocationId.Create(value))
+                value => value.Value,
+                value => new LocationId(value))
             .HasColumnName("id")
             .IsRequired();
 
-        builder.Property(l => l.Name)
-            .HasConversion(
-                l => l.Value,
-                value => LocationName.Create(value).Value)
-            .HasColumnName("name")
-            .HasMaxLength(LengthConstants.LOCATION_NAME_MAX_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(l => l.Name, nb =>
+        {
+            nb.Property(n => n.Value)
+                .HasColumnName("name")
+                .HasMaxLength(LengthConstants.LOCATION_NAME_MAX_LENGTH)
+                .IsRequired();
+        });
 
         builder.OwnsOne(l => l.Address, ab =>
         {
@@ -47,13 +47,13 @@ public class LocationConfiguration: IEntityTypeConfiguration<Location>
                 .IsRequired();
         });
 
-        builder.Property(l => l.Timezone)
-            .HasConversion(
-                l => l.Value,
-                value => LocationTimezone.Create(value).Value)
-            .HasColumnName("timezone")
-            .HasMaxLength(LengthConstants.LOCATION_TIMEZONE_MAX_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(l => l.Timezone, tb =>
+        {
+            tb.Property(n => n.Value)
+                .HasColumnName("timezone")
+                .HasMaxLength(LengthConstants.LOCATION_TIMEZONE_MAX_LENGTH)
+                .IsRequired();
+        });
 
         builder.Property(l => l.IsActive)
             .HasColumnName("is_active")
@@ -65,6 +65,10 @@ public class LocationConfiguration: IEntityTypeConfiguration<Location>
 
         builder.Property(l => l.UpdatedAt)
             .HasColumnName("updated_at")
-            .IsRequired(false);
+            .IsRequired();
+
+        builder.HasMany(l => l.DepartmentLocations)
+            .WithOne()
+            .HasForeignKey(l => l.LocationId);
     }
 }

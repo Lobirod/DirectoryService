@@ -5,39 +5,11 @@ using DirectoryService.Domain.ValueObjects;
 
 namespace DirectoryService.Domain.DepartmentLocations;
 
-public class DepartmentLocation
+public sealed class DepartmentLocation
 {
-    //EF Core
-    private DepartmentLocation()
-    {
+    public DepartmentLocationId Id { get; init; }
 
-    }
+    public DepartmentId DepartmentId { get; init; }
 
-    private DepartmentLocation(
-        DepartmentLocationId id,
-        DepartmentId departmentId,
-        LocationId locationId)
-    {
-        Id = id;
-        DepartmentId = departmentId;
-        LocationId = locationId;
-    }
-
-    public DepartmentLocationId Id { get; private set; }
-
-    public DepartmentId DepartmentId { get; private set; }
-
-    public LocationId LocationId { get; private set; }
-
-    public static Result<DepartmentLocation> Create(
-        DepartmentLocationId id,
-        DepartmentId departmentId,
-        LocationId locationId)
-    {
-        if(departmentId.Value == Guid.Empty)
-            return Result.Failure<DepartmentLocation>("Id подразделения не может быть пустым");
-        if(locationId.Value == Guid.Empty)
-            return Result.Failure<DepartmentLocation>("Id локации не может быть пустым");
-        return new DepartmentLocation(id, departmentId,  locationId);
-    }
+    public LocationId LocationId { get; init; }
 }

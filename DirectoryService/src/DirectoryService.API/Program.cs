@@ -1,5 +1,5 @@
 using DirectoryService.Infrastructure;
-using DirectoryService.Presentation;
+using DirectoryService.API;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,7 +11,7 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
+    app.MapOpenApi("swagger/v1/swagger.json");
     app.UseSwaggerUI();
 }
 

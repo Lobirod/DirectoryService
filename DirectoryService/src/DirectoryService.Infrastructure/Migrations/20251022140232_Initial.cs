@@ -16,18 +16,25 @@ namespace DirectoryService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
-                    identifier = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
                     parent_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
-                    depth = table.Column<short>(type: "smallint", nullable: false),
+                    depth = table.Column<int>(type: "integer", nullable: false),
+                    ChildrenCount = table.Column<int>(type: "integer", nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    identifier = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    name = table.Column<string>(type: "character varying(150)", maxLength: 150, nullable: false),
+                    path = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_departments", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_departments_departments_parent_id",
+                        column: x => x.parent_id,
+                        principalTable: "departments",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -35,12 +42,12 @@ namespace DirectoryService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
-                    timezone = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
-                    adress = table.Column<string>(type: "jsonb", nullable: false)
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    name = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
+                    timezone = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    address = table.Column<string>(type: "jsonb", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -52,11 +59,11 @@ namespace DirectoryService.Infrastructure.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
-                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
                     is_active = table.Column<bool>(type: "boolean", nullable: false),
                     created_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                    updated_at = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    description = table.Column<string>(type: "character varying(1000)", maxLength: 1000, nullable: false),
+                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,6 +139,11 @@ namespace DirectoryService.Infrastructure.Migrations
                 name: "IX_department_position_position_id",
                 table: "department_position",
                 column: "position_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_departments_parent_id",
+                table: "departments",
+                column: "parent_id");
         }
 
         /// <inheritdoc />
