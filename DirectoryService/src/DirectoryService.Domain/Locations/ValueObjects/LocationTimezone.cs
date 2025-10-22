@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Shared;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
@@ -17,15 +18,18 @@ public record LocationTimezone
         Value = value;
     }
 
-    public static Result<LocationTimezone> Create(string value)
+    public static Result<LocationTimezone, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return Result.Failure<LocationTimezone>("Временная зона IANA не должна быть пустой");
+            return Error.Validation(null, "Временная зона IANA не должна быть пустой");
+
         if (value.Length > LengthConstants.LOCATION_TIMEZONE_MAX_LENGTH)
-            return Result.Failure<LocationTimezone>($"Временная зона IANA  не корректна");
-        var timezoneParts = value.Split("/");
+            return Error.Validation(null, $"Временная зона IANA  не корректна");
+
+        string[] timezoneParts = value.Split("/");
+
         if (timezoneParts.Length != 2)
-            return Result.Failure<LocationTimezone>($"Временная зона IANA  не корректна");
+            return Error.Validation(null, $"Временная зона IANA  не корректна");
 
         return new LocationTimezone(value);
     }

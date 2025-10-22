@@ -1,11 +1,13 @@
-﻿using DirectoryService.Application.Abstractions;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Abstractions;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.Extensions.Logging;
+using Shared;
 
 namespace DirectoryService.Application.Locations.CreateLocation;
 
-public class CreateLocationHandler: ICommandHandler<Guid, CreateLocationCommand>
+public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, CreateLocationCommand>
 {
     private readonly ILocationsRepository _locationsRepository;
     private readonly ILogger<CreateLocationHandler> _logger;
@@ -18,18 +20,27 @@ public class CreateLocationHandler: ICommandHandler<Guid, CreateLocationCommand>
         _logger = logger;
     }
 
-    public async Task<Guid> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
     {
         var locationId = LocationId.CreateNew();
 
-        var locationName = LocationName.Create(command.Name).Value;
+        var locationNameResult = LocationName.Create(command.Name);
+        if (locationNameResult.IsFailure)
+            return locationNameResult.Error.ToErrors();
+        var locationName = locationNameResult.Value;
 
-        var locationAddress = LocationAddress.Create(
+        var locationAddressResult = LocationAddress.Create(
             command.Address.Country,
             command.Address.City,
-            command.Address.Street).Value;
+            command.Address.Street);
+        if (locationAddressResult.IsFailure)
+            return locationAddressResult.Error.ToErrors();
+        var locationAddress = locationAddressResult.Value;
 
-        var locationTimezone = LocationTimezone.Create(command.Timezone).Value;
+        var locationTimezoneResult = LocationTimezone.Create(command.Timezone);
+        if (locationTimezoneResult.IsFailure)
+            return locationTimezoneResult.Error.ToErrors();
+        var locationTimezone = locationTimezoneResult.Value;
 
         var location = Location.Create(
             locationId,

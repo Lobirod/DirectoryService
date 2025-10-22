@@ -1,5 +1,7 @@
-﻿using DirectoryService.Application.Locations;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
+using Shared;
 
 namespace DirectoryService.Infrastructure.Repositories;
 
@@ -12,7 +14,7 @@ public class LocationsEfCoreRepository : ILocationsRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Guid> AddAsync(Location location, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> AddAsync(Location location, CancellationToken cancellationToken)
     {
         await _dbContext.Locations.AddAsync(location, cancellationToken);
 
