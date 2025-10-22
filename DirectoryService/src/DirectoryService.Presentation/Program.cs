@@ -1,4 +1,3 @@
-using DirectoryService.Application;
 using DirectoryService.Infrastructure;
 using DirectoryService.Presentation;
 

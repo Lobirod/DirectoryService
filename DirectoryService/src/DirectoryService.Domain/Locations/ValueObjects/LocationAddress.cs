@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Shared;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
@@ -24,26 +25,29 @@ public record LocationAddress
         Street = street;
     }
 
-    public static Result<LocationAddress> Create(
+    public static Result<LocationAddress, Error> Create(
         string country,
         string city,
         string street)
     {
         if (country.Length > LengthConstants.LOCATION_ADDRESS_MAX_LENGTH)
         {
-            return Result.Failure<LocationAddress>(
+            return Error.Validation(
+                null,
                 $"Название страны не должен быть более {LengthConstants.LOCATION_ADDRESS_MAX_LENGTH} символов");
         }
 
         if (city.Length > LengthConstants.LOCATION_ADDRESS_MAX_LENGTH)
         {
-            return Result.Failure<LocationAddress>(
+            return Error.Validation(
+                null,
                 $"Название города не должен быть более {LengthConstants.LOCATION_ADDRESS_MAX_LENGTH} символов");
         }
 
         if (street.Length > LengthConstants.LOCATION_ADDRESS_MAX_LENGTH)
         {
-            return Result.Failure<LocationAddress>(
+            return Error.Validation(
+                null,
                 $"Название улицы не должен быть более {LengthConstants.LOCATION_ADDRESS_MAX_LENGTH} символов");
         }
 
