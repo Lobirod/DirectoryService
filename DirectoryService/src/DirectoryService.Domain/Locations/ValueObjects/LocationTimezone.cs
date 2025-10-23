@@ -5,12 +5,6 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record LocationTimezone
 {
-    //EF Core
-    private LocationTimezone()
-    {
-
-    }
-
     public string Value { get; }
 
     private LocationTimezone(string value)

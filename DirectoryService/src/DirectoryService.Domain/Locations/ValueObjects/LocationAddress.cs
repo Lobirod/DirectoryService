@@ -5,12 +5,6 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record LocationAddress
 {
-    //EF Core
-    private LocationAddress()
-    {
-
-    }
-
     public string Country { get; }
     public string City { get; }
     public string Street { get; }

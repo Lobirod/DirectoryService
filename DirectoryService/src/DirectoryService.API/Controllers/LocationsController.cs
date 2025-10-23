@@ -6,13 +6,18 @@ using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.EndpointResults;
 
-namespace DirectoryService.Presentation.Locations;
+namespace DirectoryService.API.Controllers;
 
 [ApiController]
 [Route("api/locations")]
 public class LocationsController : ControllerBase
 {
     [HttpPost]
+    [ProducesResponseType<Envelope<Guid>>(201)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(404)]
+    [ProducesResponseType<Envelope>(409)]
+    [ProducesResponseType<Envelope>(500)]
     public async Task<EndpointResult<Guid>> Create(
         [FromServices] ICommandHandler<Result<Guid, Errors>, CreateLocationCommand> handler,
         [FromBody]CreateLocationDto locationDto,

@@ -10,7 +10,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Infrastruc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Contracts", "src\DirectoryService.Contracts\DirectoryService.Contracts.csproj", "{AB5113C8-0B2C-40D2-95B7-71A9ACFF8BF7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.Presentation", "src\DirectoryService.Presentation\DirectoryService.Presentation.csproj", "{0D82EBD4-8D02-4E77-BA2A-C28A25F51CD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryService.API", "src\DirectoryService.API\DirectoryService.API.csproj", "{0D82EBD4-8D02-4E77-BA2A-C28A25F51CD1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0A00C5FC-9777-47AB-9534-ACF8DC201EB1}"
 	ProjectSection(SolutionItems) = preProject

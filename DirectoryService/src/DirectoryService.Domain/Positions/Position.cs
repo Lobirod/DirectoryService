@@ -1,18 +1,19 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
+using Shared;
 
 namespace DirectoryService.Domain.Positions;
 
-public class Position
+public sealed class Position
 {
-    private readonly List<DepartmentPosition> _departmentPositions = [];
-
     //EF Core
     private Position()
     {
 
     }
+
+    private readonly List<DepartmentPosition> _departmentPositions = [];
 
     private Position(
         PositionId id,
@@ -23,7 +24,9 @@ public class Position
         Id = id;
         Name = name;
         Description = description;
+        IsActive = true;
         CreatedAt = DateTime.UtcNow;
+        UpdatedAt = DateTime.UtcNow;
         _departmentPositions = departmentPosition.ToList();
     }
 
@@ -41,12 +44,17 @@ public class Position
 
     public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
 
-    public static Result<Position> Create(
-        PositionId id,
+    public static Result<Position, Error> Create(
         PositionName name,
         PositionDescription description,
-        IEnumerable<DepartmentPosition> departmentPosition)
+        IEnumerable<DepartmentPosition> departmentPosition,
+        PositionId? positionId = null)
     {
-        return new Position(id, name, description, departmentPosition);
+        var departmentPositionsList = departmentPosition.ToList();
+
+        if (departmentPositionsList.Count == 0)
+            return Error.Validation("Position.department", "Должность должна содержать не менее одного подразделения");
+
+        return new Position(positionId ?? new PositionId(Guid.NewGuid()), name, description, departmentPositionsList);
     }
 }

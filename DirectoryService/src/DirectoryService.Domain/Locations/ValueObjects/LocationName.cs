@@ -5,12 +5,6 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 
 public record LocationName
 {
-    //EF Core
-    private LocationName()
-    {
-
-    }
-
     public string Value { get; }
 
     private LocationName(string value)
@@ -22,6 +16,7 @@ public record LocationName
     {
         if (string.IsNullOrWhiteSpace(value))
             return Error.Validation(null, "Имя локации не должен быть пустым");
+
         if (value.Length < LengthConstants.LOCATION_NAME_MIN_LENGTH)
         {
             return Error.Validation(
