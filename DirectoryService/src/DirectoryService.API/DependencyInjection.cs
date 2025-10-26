@@ -25,7 +25,7 @@ public static class DependencyInjection
                         errorsProp.Items.Reference = new OpenApiReference
                         {
                             Type = ReferenceType.Schema,
-                            Id = "Error"
+                            Id = "Error",
                         };
                     }
                 }
