@@ -1,5 +1,6 @@
 using DirectoryService.API;
 using DirectoryService.API.Middlewares;
+using DirectoryService.Application;
 using DirectoryService.Infrastructure;
 using Serilog;
 
@@ -10,9 +11,11 @@ Log.Logger = new LoggerConfiguration()
     .WriteTo.Seq(builder.Configuration.GetConnectionString("Seq") ?? throw new ArgumentNullException("Seq"))
     .CreateLogger();
 
-builder.Services.AddProgramDependencies();
+builder.Services.AddWebDependencies();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddApplication();
 
 builder.Services.AddSerilog();
 
@@ -22,6 +25,8 @@ var app = builder.Build();
 
 app.UseExceptionMiddleware();
 
+app.UseSerilogRequestLogging();
+
 app.UseHttpLogging();
 
 if (app.Environment.IsDevelopment())
@@ -29,8 +34,6 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi("swagger/v1/swagger.json");
     app.UseSwaggerUI();
 }
-
-app.UseSerilogRequestLogging();
 
 app.MapControllers();
 

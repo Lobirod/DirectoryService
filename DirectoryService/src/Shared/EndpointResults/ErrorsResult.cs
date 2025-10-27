@@ -10,7 +10,7 @@ public class ErrorsResult : IResult
     {
         _errors = error.ToErrors();
     }
-    
+
     public ErrorsResult(Errors errors)
     {
         _errors = errors;

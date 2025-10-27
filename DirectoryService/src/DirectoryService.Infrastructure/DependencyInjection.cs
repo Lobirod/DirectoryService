@@ -12,7 +12,7 @@ public static class DependencyInjection
         services.AddScoped<DirectoryServiceDbContext>(_ =>
             new DirectoryServiceDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
-        services.AddScoped<ILocationsRepository, LocationsEfCoreRepository>();
+        services.AddScoped<ILocationsRepository, LocationsRepository>();
 
         return services;
     }
