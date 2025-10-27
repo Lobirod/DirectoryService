@@ -6,13 +6,11 @@ using Shared;
 
 namespace DirectoryService.Domain;
 
-
 public sealed class Department
 {
     //EF Core
     private Department()
     {
-
     }
 
     private readonly List<Department> _childrenDepartments = [];
@@ -31,6 +29,7 @@ public sealed class Department
         Id = id;
         Name = name;
         Identifier = identifier;
+        IsActive = true;
         IsActive = true;
         Path = path;
         Depth = depth;
