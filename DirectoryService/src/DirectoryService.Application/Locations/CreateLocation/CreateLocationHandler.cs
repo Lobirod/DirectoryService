@@ -54,7 +54,7 @@ public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, Create
             locationTimezone).Value;
 
         await _locationsRepository.AddAsync(location, cancellationToken);
-        _logger.LogInformation("Location created with id {locationId}", location.Id);
+        _logger.LogInformation("Location created with id {locationId}", location.Id.Value);
 
         return location.Id.Value;
     }
