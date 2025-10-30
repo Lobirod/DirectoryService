@@ -10,7 +10,6 @@ public sealed class Location
     //EF Core
     private Location()
     {
-
     }
 
     private readonly List<DepartmentLocation> _departmentLocations = [];

@@ -53,7 +53,11 @@ public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, Create
             locationAddress,
             locationTimezone).Value;
 
-        await _locationsRepository.AddAsync(location, cancellationToken);
+        var addResult = await _locationsRepository.AddAsync(location, cancellationToken);
+
+        if (addResult.IsFailure)
+            return addResult.Error.ToErrors();
+
         _logger.LogInformation("Location created with id {locationId}", location.Id.Value);
 
         return location.Id.Value;

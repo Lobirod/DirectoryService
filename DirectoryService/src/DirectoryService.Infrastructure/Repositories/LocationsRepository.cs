@@ -59,4 +59,20 @@ public class LocationsRepository : ILocationsRepository
 
         return exists;
     }
+
+    public async Task<Result<bool, Error>> ExistsByIdAsync(
+        IReadOnlyCollection<Guid> locationsId,
+        CancellationToken cancellationToken)
+    {
+        if (locationsId.Count == 0)
+            return Error.NotFound(null, "Список локаций не должен быть пустым");
+
+        var locationIdList = await _dbContext.Locations
+            .Select(l => l.Id.Value).ToListAsync(cancellationToken);
+
+        int existingLocationCount = locationsId
+            .Count(id => locationIdList.Contains(id));
+
+        return existingLocationCount == locationsId.Count;
+    }
 }

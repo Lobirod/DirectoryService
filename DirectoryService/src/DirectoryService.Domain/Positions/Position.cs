@@ -10,7 +10,6 @@ public sealed class Position
     //EF Core
     private Position()
     {
-
     }
 
     private readonly List<DepartmentPosition> _departmentPositions = [];

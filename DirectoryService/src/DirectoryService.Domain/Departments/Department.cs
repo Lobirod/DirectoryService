@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
-using DirectoryService.Domain.ValueObjects;
+using DirectoryService.Domain.Departments.ValueObjects;
 using Shared;
 
-namespace DirectoryService.Domain;
+namespace DirectoryService.Domain.Departments;
 
 public sealed class Department
 {

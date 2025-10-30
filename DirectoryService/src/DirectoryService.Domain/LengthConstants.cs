@@ -21,6 +21,4 @@ public readonly struct LengthConstants
     public const int POSITION_NAME_MAX_LENGTH = 100;
 
     public const int POSITION_DESCRIPTION_MAX_LENGTH = 1000;
-
-
 }

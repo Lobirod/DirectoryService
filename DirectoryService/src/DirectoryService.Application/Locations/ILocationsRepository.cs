@@ -12,4 +12,8 @@ public interface ILocationsRepository
     Task<Result<bool, Error>> ExistsByNameAsync(LocationName name, CancellationToken cancellationToken);
 
     Task<Result<bool, Error>> ExistsByAddressAsync(LocationAddress address, CancellationToken cancellationToken);
+
+    Task<Result<bool, Error>> ExistsByIdAsync(
+        IReadOnlyCollection<Guid> locationsId,
+        CancellationToken cancellationToken);
 }
