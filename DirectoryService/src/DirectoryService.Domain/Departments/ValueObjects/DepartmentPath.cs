@@ -1,8 +1,8 @@
-﻿namespace DirectoryService.Domain.ValueObjects;
+﻿namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public record DepartmentPath
 {
-    private const char Separator = '/';
+    private const char SEPARATOR = '/';
 
     public string Value { get; }
 
@@ -18,6 +18,6 @@ public record DepartmentPath
 
     public DepartmentPath CreateChildren(DepartmentIdentifier childIdentifier)
     {
-        return new DepartmentPath(Value + Separator + childIdentifier.Value);
+        return new DepartmentPath(Value + SEPARATOR + childIdentifier.Value);
     }
 }

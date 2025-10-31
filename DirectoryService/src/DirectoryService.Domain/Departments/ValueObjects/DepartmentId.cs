@@ -1,3 +1,3 @@
-﻿namespace DirectoryService.Domain.ValueObjects;
+﻿namespace DirectoryService.Domain.Departments.ValueObjects;
 
 public record DepartmentId(Guid Value);
