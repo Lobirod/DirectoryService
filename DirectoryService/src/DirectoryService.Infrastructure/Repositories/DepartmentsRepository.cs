@@ -1,7 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments;
+using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
+using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -37,15 +39,26 @@ public class DepartmentsRepository : IDepartmentsRepository
         }
     }
 
+    public async Task<UnitResult<Error>> DeleteDepartmentLocationsByDepartmentId(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        await _dbContext.DepartmentLocations
+            .Where(dl => dl.DepartmentId == departmentId)
+            .ExecuteDeleteAsync(cancellationToken);
+
+        return UnitResult.Success<Error>();
+    }
+
     public async Task<Result<Department, Error>> GetByIdAsync(
-        DepartmentId parentId,
+        DepartmentId departmentId,
         CancellationToken cancellationToken)
     {
         var department = await _dbContext.Departments
-            .FirstOrDefaultAsync(d => d.Id == parentId, cancellationToken);
+            .FirstOrDefaultAsync(d => d.Id == departmentId, cancellationToken);
 
         if (department == null)
-            return Error.NotFound(null, $"Подразделение с Id {parentId} не найдено");
+            return Error.NotFound(null, $"Подразделение с Id {departmentId} не найдено");
 
         return department;
     }

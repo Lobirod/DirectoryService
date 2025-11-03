@@ -68,6 +68,7 @@ public class LocationsRepository : ILocationsRepository
             return Error.NotFound(null, "Список локаций не должен быть пустым");
 
         var locationIdList = await _dbContext.Locations
+            .Where(l => l.IsActive == true)
             .Select(l => l.Id.Value).ToListAsync(cancellationToken);
 
         int existingLocationCount = locationsId
