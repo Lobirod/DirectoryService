@@ -76,19 +76,15 @@ public class DepartmentsRepository : IDepartmentsRepository
     }
 
     public async Task<Result<bool, Error>> ExistsByIdAsync(
-        IReadOnlyCollection<Guid> departmentsId,
+        IReadOnlyCollection<DepartmentId> departmentsId,
         CancellationToken cancellationToken)
     {
         if (departmentsId.Count == 0)
             return Error.NotFound(null, "Список подразделений не должен быть пустым");
-
-        var departmentIdList = await _dbContext.Departments
-            .Where(d => d.IsActive == true)
-            .Select(l => l.Id.Value)
-            .ToListAsync(cancellationToken);
-
-        int existingDepartmentCount = departmentsId
-            .Count(id => departmentIdList.Contains(id));
+        
+        int existingDepartmentCount = await _dbContext.Departments
+            .Where(d => departmentsId.Contains(d.Id) && d.IsActive)
+            .CountAsync(cancellationToken);
 
         return existingDepartmentCount == departmentsId.Count;
     }

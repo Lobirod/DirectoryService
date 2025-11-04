@@ -65,8 +65,8 @@ public class UpdateDepartmentLocationsHandler : ICommandHandler<Result<Guid, Err
             transactionScope.Rollback();
             return Error.Validation(null, "Указанное подразделение не активно").ToErrors();
         }
-
-        var locationsId = command.Request.LocationsId.ToList();
+        
+        var locationsId = command.Request.LocationsId.Select(l => new LocationId(l)).ToList();
 
         var locationExist = await _locationsRepository.ExistsByIdAsync(locationsId, cancellationToken);
 
@@ -76,8 +76,8 @@ public class UpdateDepartmentLocationsHandler : ICommandHandler<Result<Guid, Err
             return Error.NotFound(null, "Не все указанные локации существуют").ToErrors();
         }
 
-        var departmentLocations = command.Request.LocationsId
-            .Select(l => DepartmentLocation.Create(departmentId, new LocationId(l)).Value)
+        var departmentLocations = locationsId
+            .Select(l => DepartmentLocation.Create(departmentId, l).Value)
             .ToList();
 
         var updateLocationsResult = department.UpdateLocations(departmentLocations);

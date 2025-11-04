@@ -47,15 +47,15 @@ public class CreatePositionHandler : ICommandHandler<Result<Guid, Errors>, Creat
 
         var positionDescription = PositionDescription.Create(command.Request.Description).Value;
 
-        var departmentId = command.Request.DepartmentsId.ToList();
+        var departmentsId = command.Request.DepartmentsId.Select(d => new DepartmentId(d)).ToList();
 
-        var departmentExist = await _departmentsRepository.ExistsByIdAsync(departmentId, cancellationToken);
+        var departmentExist = await _departmentsRepository.ExistsByIdAsync(departmentsId, cancellationToken);
 
         if (!departmentExist.Value)
             return Error.NotFound(null, "Не все указанные подразделения существуют").ToErrors();
 
-        var departmentPosition = command.Request.DepartmentsId
-            .Select(p => DepartmentPosition.Create(new DepartmentId(p), positionId).Value)
+        var departmentPosition = departmentsId
+            .Select(d => DepartmentPosition.Create(d, positionId).Value)
             .ToList();
 
         var positionResult = Position.Create(

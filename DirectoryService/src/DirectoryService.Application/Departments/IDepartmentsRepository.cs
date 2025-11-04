@@ -24,6 +24,6 @@ public interface IDepartmentsRepository
         CancellationToken cancellationToken);
 
     Task<Result<bool, Error>> ExistsByIdAsync(
-        IReadOnlyCollection<Guid> departmentsId,
+        IReadOnlyCollection<DepartmentId> departmentsId,
         CancellationToken cancellationToken);
 }
