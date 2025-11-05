@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Departments;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments.ValueObjects;
@@ -14,7 +15,7 @@ public sealed class Department
     }
 
     private readonly List<Department> _childrenDepartments = [];
-    private readonly List<DepartmentLocation> _departmentLocations = [];
+    private List<DepartmentLocation> _departmentLocations = [];
     private readonly List<DepartmentPosition> _departmentPositions = [];
 
     private Department(
@@ -100,5 +101,19 @@ public sealed class Department
         return new Department(
             departmentId ?? new DepartmentId(Guid.NewGuid()),
             name, identifier, path, parent.Depth + 1, departmentLocationsList, parent.Id);
+    }
+
+    public UnitResult<Error> UpdateLocations(IEnumerable<DepartmentLocation> newDepartmentLocations)
+    {
+        var newDepartmentLocationsList = newDepartmentLocations.ToList();
+
+        if (newDepartmentLocationsList.Count == 0)
+            return Error.Validation("department.location", "Подразделение должно содержать не менее одной локации");
+        
+        _departmentLocations = newDepartmentLocationsList;
+        
+        UpdatedAt = DateTime.UtcNow;
+        
+        return UnitResult.Success<Error>();
     }
 }

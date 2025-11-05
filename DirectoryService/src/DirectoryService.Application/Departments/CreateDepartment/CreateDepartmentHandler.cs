@@ -56,15 +56,15 @@ public class CreateDepartmentHandler: ICommandHandler<Result<Guid, Errors>, Crea
         if (identifierExist.Value)
             return Error.Conflict(null, "Указанный идентификатор уже существует").ToErrors();
 
-        var locationsId = command.Request.LocationsId.ToList();
+        var locationsId = command.Request.LocationsId.Select(l => new LocationId(l)).ToList();
 
         var locationExist = await _locationsRepository.ExistsByIdAsync(locationsId, cancellationToken);
 
         if (!locationExist.Value)
             return Error.NotFound(null, "Не все указанные локации существуют").ToErrors();
 
-        var departmentLocations = command.Request.LocationsId
-            .Select(l => DepartmentLocation.Create(departmentId, new LocationId(l)).Value)
+        var departmentLocations = locationsId
+            .Select(l => DepartmentLocation.Create(departmentId, l).Value)
             .ToList();
 
         Result<Department, Error> departmentResult;
