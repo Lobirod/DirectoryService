@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Shared;
@@ -18,6 +17,10 @@ public interface IDepartmentsRepository
             DepartmentId parentId,
             CancellationToken cancellationToken);
 
+    Task<Result<Department, Error>> GetByIdWIthLock(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken);
+
     Task<Result<bool, Error>> ExistsByIdentifierAsync(
         DepartmentId? parentId,
         DepartmentIdentifier departmentIdentifier,
@@ -25,5 +28,15 @@ public interface IDepartmentsRepository
 
     Task<Result<bool, Error>> ExistsByIdAsync(
         IReadOnlyCollection<DepartmentId> departmentsId,
+        CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> LockDescendants(
+        DepartmentPath rootPath,
+        CancellationToken cancellationToken);
+
+    Task<UnitResult<Error>> UpdateDescendantsPathAndDepth(
+        DepartmentPath newPath,
+        DepartmentPath oldPath,
+        int oldDepth,
         CancellationToken cancellationToken);
 }

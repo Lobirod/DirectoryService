@@ -42,7 +42,7 @@ public class PositionsRepository : IPositionsRepository
         CancellationToken cancellationToken)
     {
         bool exists = await _dbContext.Positions
-            .AnyAsync(p => p.IsActive == true && p.Name.Value == name.Value, cancellationToken);
+            .AnyAsync(p => p.IsActive == true && p.Name == name, cancellationToken);
 
         return exists;
     }

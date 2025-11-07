@@ -41,7 +41,7 @@ public class LocationsRepository : ILocationsRepository
         LocationName name,
         CancellationToken cancellationToken)
     {
-        bool exists = await _dbContext.Locations.AnyAsync(l => l.Name.Value == name.Value, cancellationToken);
+        bool exists = await _dbContext.Locations.AnyAsync(l => l.Name == name, cancellationToken);
 
         return exists;
     }
