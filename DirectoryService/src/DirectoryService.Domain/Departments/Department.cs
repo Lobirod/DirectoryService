@@ -116,4 +116,33 @@ public sealed class Department
         
         return UnitResult.Success<Error>();
     }
+
+    public UnitResult<Error> UpdateParent(Department? parent)
+    {
+        if (ChildrenDepartments.Contains(parent))
+        {
+            return Error.Conflict(null, "Нельзя указать родителем свое дочернее подразделение");
+        }
+
+        if (parent == null)
+        {
+            ParentId = null;
+
+            Path = DepartmentPath.CreateParent(Identifier);
+            
+            Depth = 0;
+        }
+        else
+        {
+            ParentId = parent.Id;
+
+            Path = parent.Path.CreateChildren(Identifier);
+            
+            Depth = parent.Depth + 1;
+        }
+        
+        UpdatedAt = DateTime.UtcNow;
+        
+        return UnitResult.Success<Error>();
+    }
 }

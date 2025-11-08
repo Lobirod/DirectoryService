@@ -1,9 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments;
-using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
-using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
@@ -63,6 +61,29 @@ public class DepartmentsRepository : IDepartmentsRepository
         return department;
     }
 
+    public async Task<Result<Department, Error>> GetByIdWIthLock(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var department = await _dbContext.Departments
+                .FromSql($"SELECT * FROM departments WHERE id = {departmentId.Value} FOR UPDATE")
+                .FirstOrDefaultAsync(cancellationToken);
+
+            if (department == null)
+                return Error.NotFound(null, $"Подразделение с Id {departmentId} не найдено");
+
+            return department;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error to lock department with ID {departmentId}", departmentId.Value);
+
+            return Error.Failure("department.lock", "Ошибка при блокировки подразделения по ID");
+        }
+    }
+
     public async Task<Result<bool, Error>> ExistsByIdentifierAsync(
         DepartmentId? parentId,
         DepartmentIdentifier departmentIdentifier,
@@ -81,11 +102,66 @@ public class DepartmentsRepository : IDepartmentsRepository
     {
         if (departmentsId.Count == 0)
             return Error.NotFound(null, "Список подразделений не должен быть пустым");
-        
+
         int existingDepartmentCount = await _dbContext.Departments
             .Where(d => departmentsId.Contains(d.Id) && d.IsActive)
             .CountAsync(cancellationToken);
 
         return existingDepartmentCount == departmentsId.Count;
+    }
+
+    public async Task<UnitResult<Error>> LockDescendants(
+        DepartmentPath rootPath,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            FormattableString query = $"""
+                                       SELECT * FROM departments 
+                                       WHERE path <@ {rootPath.Value}::ltree 
+                                       AND path != {rootPath.Value}::ltree FOR UPDATE
+                                       """;
+            
+            await _dbContext.Database.ExecuteSqlInterpolatedAsync(query, cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error to lock descendants department");
+
+            return Error.Failure("department.descendants.lock", "Ошибка при блокировки потомков подразделения");
+        }
+    }
+
+    public async Task<UnitResult<Error>> UpdateDescendantsPathAndDepth(
+        DepartmentPath newPath,
+        DepartmentPath oldPath,
+        int oldDepth,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var updatedDate = DateTime.UtcNow;
+
+            FormattableString query = $"""
+                                       UPDATE departments
+                                       SET path = {newPath.Value}::ltree || 
+                                       subpath(path, nlevel({oldPath.Value}::ltree)),
+                                       depth = depth + {oldDepth},
+                                       updated_at = {updatedDate}
+                                       WHERE path <@ {oldPath.Value}::ltree AND path != {oldPath.Value}::ltree
+                                       """;
+
+            await _dbContext.Database.ExecuteSqlInterpolatedAsync(query, cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error to update path and depth descendants department");
+
+            return Error.Failure("update.department", "Ошибка обновления пути и глубины у подразделений потомков");
+        }
     }
 }

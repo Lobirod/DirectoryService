@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DirectoryService.Infrastructure.Configurations;
 
-public class PositionConfiguration: IEntityTypeConfiguration<Position>
+public class PositionConfiguration : IEntityTypeConfiguration<Position>
 {
     public void Configure(EntityTypeBuilder<Position> builder)
     {
@@ -14,27 +14,27 @@ public class PositionConfiguration: IEntityTypeConfiguration<Position>
 
         builder.HasKey(p => p.Id).HasName("pk_positions");
         builder.Property(p => p.Id)
+            .HasColumnName("id")
             .HasConversion(
                 value => value.Value,
                 value => new PositionId(value))
-            .HasColumnName("id")
             .IsRequired();
 
-        builder.ComplexProperty(p => p.Name, nb =>
-        {
-            nb.Property(n => n.Value)
-                .HasColumnName("name")
-                .HasMaxLength(LengthConstants.POSITION_NAME_MAX_LENGTH)
-                .IsRequired();
-        });
+        builder.Property(p => p.Name)
+            .HasColumnName("name")
+            .HasConversion(
+                value => value.Value,
+                value => PositionName.Create(value).Value)
+            .HasMaxLength(LengthConstants.POSITION_NAME_MAX_LENGTH)
+            .IsRequired();
 
-        builder.ComplexProperty(p => p.Description, db =>
-        {
-            db.Property(d => d.Value)
-                .HasColumnName("description")
-                .HasMaxLength(LengthConstants.POSITION_DESCRIPTION_MAX_LENGTH)
-                .IsRequired();
-        });
+        builder.Property(p => p.Description)
+            .HasColumnName("description")
+            .HasConversion(
+                value => value.Value,
+                value => PositionDescription.Create(value).Value)
+            .HasMaxLength(LengthConstants.POSITION_DESCRIPTION_MAX_LENGTH)
+            .IsRequired();
 
         builder.Property(p => p.IsActive)
             .HasColumnName("is_active")

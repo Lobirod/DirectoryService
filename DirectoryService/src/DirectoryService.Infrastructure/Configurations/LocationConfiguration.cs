@@ -14,19 +14,19 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
 
         builder.HasKey(l => l.Id).HasName("pk_locations");
         builder.Property(l => l.Id)
+            .HasColumnName("id")
             .HasConversion(
                 value => value.Value,
                 value => new LocationId(value))
-            .HasColumnName("id")
             .IsRequired();
 
-        builder.ComplexProperty(l => l.Name, nb =>
-        {
-            nb.Property(n => n.Value)
-                .HasColumnName("name")
-                .HasMaxLength(LengthConstants.LOCATION_NAME_MAX_LENGTH)
-                .IsRequired();
-        });
+        builder.Property(l => l.Name)
+            .HasColumnName("name")
+            .HasConversion(
+                value => value.Value,
+                value => LocationName.Create(value).Value)
+            .HasMaxLength(LengthConstants.LOCATION_NAME_MAX_LENGTH)
+            .IsRequired();
 
         builder.OwnsOne(l => l.Address, ab =>
         {
@@ -47,14 +47,14 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
                 .IsRequired();
         });
 
-        builder.ComplexProperty(l => l.Timezone, tb =>
-        {
-            tb.Property(n => n.Value)
-                .HasColumnName("timezone")
-                .HasMaxLength(LengthConstants.LOCATION_TIMEZONE_MAX_LENGTH)
-                .IsRequired();
-        });
-
+        builder.Property(l => l.Timezone)
+            .HasColumnName("timezone")
+            .HasConversion(
+                value => value.Value,
+                value => LocationTimezone.Create(value).Value)
+            .HasMaxLength(LengthConstants.LOCATION_TIMEZONE_MAX_LENGTH)
+            .IsRequired();
+        
         builder.Property(l => l.IsActive)
             .HasColumnName("is_active")
             .IsRequired();
