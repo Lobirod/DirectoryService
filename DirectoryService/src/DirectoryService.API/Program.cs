@@ -38,3 +38,8 @@ if (app.Environment.IsDevelopment())
 app.MapControllers();
 
 app.Run();
+
+namespace DirectoryService.API
+{
+    public partial class Program;
+}
