@@ -1,7 +1,8 @@
-﻿using DirectoryService.Application.Departments.CreateDepartment;
-using DirectoryService.Application.Departments.MoveDepartment;
-using DirectoryService.Application.Departments.UpdateDepartmentLocations;
+﻿using DirectoryService.Application.Departments.Commands.Create;
+using DirectoryService.Application.Departments.Commands.Move;
+using DirectoryService.Application.Departments.Commands.UpdateLocations;
 using DirectoryService.Contracts.Departments;
+using DirectoryService.Contracts.Departments.Request;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.EndpointResults;

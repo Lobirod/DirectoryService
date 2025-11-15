@@ -31,7 +31,6 @@ public sealed class Department
         Name = name;
         Identifier = identifier;
         IsActive = true;
-        IsActive = true;
         Path = path;
         Depth = depth;
         ChildrenCount = ChildrenDepartments.Count;

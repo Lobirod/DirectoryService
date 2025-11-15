@@ -1,5 +1,6 @@
-﻿using DirectoryService.Application.Positions.CreatePosition;
+﻿using DirectoryService.Application.Positions.Commands.Create;
 using DirectoryService.Contracts.Positions;
+using DirectoryService.Contracts.Positions.Request;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.EndpointResults;
@@ -17,7 +18,7 @@ public class PositionsController : ControllerBase
     [ProducesResponseType<Envelope>(409)]
     [ProducesResponseType<Envelope>(500)]
     public async Task<EndpointResult<Guid>> Create(
-        [FromBody]CreatePositionRequest request,
+        [FromBody] CreatePositionRequest request,
         [FromServices] CreatePositionHandler handler,
         CancellationToken cancellationToken)
     {
