@@ -23,7 +23,7 @@ public static class DependencyInjection
                         };
                     }
                 }
-
+                
                 return Task.CompletedTask;
             });
         });
