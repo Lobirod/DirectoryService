@@ -3,7 +3,6 @@ using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Validation;
-using DirectoryService.Contracts.Locations;
 using DirectoryService.Contracts.Locations.Response;
 using FluentValidation;
 using Shared;

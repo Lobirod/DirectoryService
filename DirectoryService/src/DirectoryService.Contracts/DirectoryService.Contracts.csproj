@@ -11,7 +11,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Departments\Response\" />
       <Folder Include="Positions\Response\" />
     </ItemGroup>
 

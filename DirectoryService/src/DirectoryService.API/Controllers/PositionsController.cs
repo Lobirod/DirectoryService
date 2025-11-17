@@ -1,5 +1,4 @@
 ﻿using DirectoryService.Application.Positions.Commands.Create;
-using DirectoryService.Contracts.Positions;
 using DirectoryService.Contracts.Positions.Request;
 using Microsoft.AspNetCore.Mvc;
 using Shared;

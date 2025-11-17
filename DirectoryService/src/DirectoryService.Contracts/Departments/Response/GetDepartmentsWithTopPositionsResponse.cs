@@ -1,0 +1,28 @@
+﻿namespace DirectoryService.Contracts.Departments.Response;
+
+public record GetDepartmentsWithTopPositionsResponse(List<GetDepartmentResponse> Departments);
+
+public record GetDepartmentResponse
+{
+    public Guid Id { get; init; }
+
+    public string Name { get; init; } = string.Empty;
+
+    public string Identifier { get; init; } = string.Empty;
+
+    public Guid? ParentId { get; init; }
+
+    public string Path { get; init; } = string.Empty;
+
+    public int Depth { get; init; }
+    
+    public int ChildrenCount { get; init; }
+
+    public bool IsActive { get; init; }
+
+    public DateTime CreatedAt { get; init; }
+
+    public DateTime UpdatedAt { get; init; }
+
+    public int PositionsCount { get; init; }
+}
