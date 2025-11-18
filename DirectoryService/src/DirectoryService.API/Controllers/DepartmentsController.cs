@@ -1,8 +1,9 @@
 ﻿using DirectoryService.Application.Departments.Commands.Create;
 using DirectoryService.Application.Departments.Commands.Move;
 using DirectoryService.Application.Departments.Commands.UpdateLocations;
-using DirectoryService.Contracts.Departments;
+using DirectoryService.Application.Departments.Queries.Get;
 using DirectoryService.Contracts.Departments.Request;
+using DirectoryService.Contracts.Departments.Response;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
 using Shared.EndpointResults;
@@ -58,5 +59,18 @@ public class DepartmentsController : ControllerBase
     {
         var command = new MoveDepartmentCommand(departmentId, request);
         return await handler.Handle(command, cancellationToken);
+    }
+
+    [HttpGet("top-positions")]
+    [ProducesResponseType<Envelope<GetDepartmentsWithTopPositionsResponse>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(404)]
+    [ProducesResponseType<Envelope>(409)]
+    [ProducesResponseType<Envelope>(500)]
+    public async Task<EndpointResult<GetDepartmentsWithTopPositionsResponse>> GetTopPositions(
+        [FromServices] GetDepartmentsWithTopPositionsHandler handler,
+        CancellationToken cancellationToken)
+    {
+        return await handler.Handle(cancellationToken);
     }
 }
