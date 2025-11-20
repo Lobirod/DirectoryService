@@ -9,7 +9,6 @@ using Shared;
 
 namespace DirectoryService.Application.Locations.Commands.Create;
 
-
 public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, CreateLocationCommand>
 {
     private readonly ILocationsRepository _locationsRepository;

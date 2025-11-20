@@ -1,7 +1,9 @@
 ﻿using DirectoryService.Application.Departments.Commands.Create;
 using DirectoryService.Application.Departments.Commands.Move;
 using DirectoryService.Application.Departments.Commands.UpdateLocations;
-using DirectoryService.Application.Departments.Queries.Get;
+using DirectoryService.Application.Departments.Queries.GetChildrenByParent;
+using DirectoryService.Application.Departments.Queries.GetWithChildren;
+using DirectoryService.Application.Departments.Queries.GetWithTopPositions;
 using DirectoryService.Contracts.Departments.Request;
 using DirectoryService.Contracts.Departments.Response;
 using Microsoft.AspNetCore.Mvc;
@@ -52,7 +54,7 @@ public class DepartmentsController : ControllerBase
     [ProducesResponseType<Envelope>(409)]
     [ProducesResponseType<Envelope>(500)]
     public async Task<EndpointResult<Guid>> MoveDepartment(
-        [FromQuery] Guid departmentId,
+        Guid departmentId,
         [FromBody] MoveDepartmentRequest request,
         [FromServices] MoveDepartmentHandler handler,
         CancellationToken cancellationToken)
@@ -72,5 +74,36 @@ public class DepartmentsController : ControllerBase
         CancellationToken cancellationToken)
     {
         return await handler.Handle(cancellationToken);
+    }
+    
+    [HttpGet("roots")]
+    [ProducesResponseType<Envelope<GetDepartmentsWithChildrenResponse>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(404)]
+    [ProducesResponseType<Envelope>(409)]
+    [ProducesResponseType<Envelope>(500)]
+    public async Task<EndpointResult<GetDepartmentsWithChildrenResponse>> GetDepartmentsWithChildren(
+        [FromQuery] GetDepartmentsWithChildrenRequest request,
+        [FromServices] GetDepartmentsWithChildrenHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new GetDepartmentsWithChildrenQuery(request);
+        return await handler.Handle(command, cancellationToken);
+    }
+    
+    [HttpGet("{parentId:guid}/children")]
+    [ProducesResponseType<Envelope<GetChildrenByParentResponse>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(404)]
+    [ProducesResponseType<Envelope>(409)]
+    [ProducesResponseType<Envelope>(500)]
+    public async Task<EndpointResult<GetChildrenByParentResponse>> GetChildrenByParent(
+        Guid parentId,
+        [FromQuery] GetChildrenByParentRequest request,
+        [FromServices] GetChildrenByParentHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new GetChildrenByParentQuery(parentId, request);
+        return await handler.Handle(command, cancellationToken);
     }
 }

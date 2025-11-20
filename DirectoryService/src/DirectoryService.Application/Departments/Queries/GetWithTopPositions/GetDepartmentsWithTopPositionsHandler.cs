@@ -4,7 +4,7 @@ using DirectoryService.Application.Abstractions;
 using DirectoryService.Contracts.Departments.Response;
 using Shared;
 
-namespace DirectoryService.Application.Departments.Queries.Get;
+namespace DirectoryService.Application.Departments.Queries.GetWithTopPositions;
 
 public class GetDepartmentsWithTopPositionsHandler : IQueryHandler<Result<GetDepartmentsWithTopPositionsResponse, Errors>>
 {
@@ -17,7 +17,7 @@ public class GetDepartmentsWithTopPositionsHandler : IQueryHandler<Result<GetDep
 
     public async Task<Result<GetDepartmentsWithTopPositionsResponse, Errors>> Handle(CancellationToken cancellationToken)
     {
-        var connection = _connectionFactory.GetDbConnection();
+        using var connection = _connectionFactory.GetDbConnection();
 
         var departmentsResponse = await connection.QueryAsync<GetDepartmentResponse>(
             """
