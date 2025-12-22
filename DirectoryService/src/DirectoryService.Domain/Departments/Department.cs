@@ -59,6 +59,8 @@ public sealed class Department
     public DateTime CreatedAt { get; private set; }
 
     public DateTime? UpdatedAt { get; private set; }
+    
+    public DateTime? DeletedAt { get; private set; }
 
     public IReadOnlyList<Department> ChildrenDepartments => _childrenDepartments;
 
@@ -143,5 +145,14 @@ public sealed class Department
         UpdatedAt = DateTime.UtcNow;
         
         return UnitResult.Success<Error>();
+    }
+
+    public void SoftDelete()
+    {   
+        IsActive = false;
+        
+        DeletedAt = DateTime.UtcNow;
+        
+        Path = DepartmentPath.SetAsDeleted(Path.Value, ParentId);
     }
 }

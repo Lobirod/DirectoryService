@@ -40,6 +40,8 @@ public sealed class Position
     public DateTime CreatedAt { get; private set; }
 
     public DateTime? UpdatedAt { get; private set; }
+    
+    public DateTime? DeletedAt { get; private set; }
 
     public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
 
@@ -55,5 +57,12 @@ public sealed class Position
             return Error.Validation("Position.department", "Должность должна содержать не менее одного подразделения");
 
         return new Position(positionId ?? new PositionId(Guid.NewGuid()), name, description, departmentPositionsList);
+    }
+    
+    public void SoftDelete()
+    {   
+        IsActive = false;
+        
+        DeletedAt = DateTime.UtcNow;
     }
 }

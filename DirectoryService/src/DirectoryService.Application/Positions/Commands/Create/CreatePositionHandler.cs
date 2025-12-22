@@ -31,23 +31,23 @@ public class CreatePositionHandler : ICommandHandler<Result<Guid, Errors>, Creat
         _validator = validator;
     }
 
-    public async Task<Result<Guid, Errors>> Handle(CreatePositionCommand query, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreatePositionCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(query, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
         var positionId = new PositionId(Guid.NewGuid());
 
-        var positionName = PositionName.Create(query.Request.Name).Value;
+        var positionName = PositionName.Create(command.Request.Name).Value;
 
         var existsByName = await _positionsRepository.ExistsByNameAsync(positionName, cancellationToken);
         if (existsByName.Value)
             return Error.Conflict(null, "Активная позиция с таким именем уже существует").ToErrors();
 
-        var positionDescription = PositionDescription.Create(query.Request.Description).Value;
+        var positionDescription = PositionDescription.Create(command.Request.Description).Value;
 
-        var departmentsId = query.Request.DepartmentsId.Select(d => new DepartmentId(d)).ToList();
+        var departmentsId = command.Request.DepartmentsId.Select(d => new DepartmentId(d)).ToList();
 
         var departmentExist = await _departmentsRepository.ExistsByIdAsync(departmentsId, cancellationToken);
 

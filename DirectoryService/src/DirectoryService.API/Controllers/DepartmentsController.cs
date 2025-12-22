@@ -1,4 +1,5 @@
 ﻿using DirectoryService.Application.Departments.Commands.Create;
+using DirectoryService.Application.Departments.Commands.Delete;
 using DirectoryService.Application.Departments.Commands.Move;
 using DirectoryService.Application.Departments.Commands.UpdateLocations;
 using DirectoryService.Application.Departments.Queries.GetChildrenByParent;
@@ -38,7 +39,7 @@ public class DepartmentsController : ControllerBase
     [ProducesResponseType<Envelope>(409)]
     [ProducesResponseType<Envelope>(500)]
     public async Task<EndpointResult<Guid>> Update(
-        [FromQuery] Guid departmentId,
+        [FromRoute] Guid departmentId,
         [FromBody] UpdateDepartmentLocationsRequest request,
         [FromServices] UpdateDepartmentLocationsHandler handler,
         CancellationToken cancellationToken)
@@ -54,7 +55,7 @@ public class DepartmentsController : ControllerBase
     [ProducesResponseType<Envelope>(409)]
     [ProducesResponseType<Envelope>(500)]
     public async Task<EndpointResult<Guid>> MoveDepartment(
-        Guid departmentId,
+        [FromRoute] Guid departmentId,
         [FromBody] MoveDepartmentRequest request,
         [FromServices] MoveDepartmentHandler handler,
         CancellationToken cancellationToken)
@@ -87,8 +88,8 @@ public class DepartmentsController : ControllerBase
         [FromServices] GetDepartmentsWithChildrenHandler handler,
         CancellationToken cancellationToken)
     {
-        var command = new GetDepartmentsWithChildrenQuery(request);
-        return await handler.Handle(command, cancellationToken);
+        var query = new GetDepartmentsWithChildrenQuery(request);
+        return await handler.Handle(query, cancellationToken);
     }
     
     [HttpGet("{parentId:guid}/children")]
@@ -98,12 +99,28 @@ public class DepartmentsController : ControllerBase
     [ProducesResponseType<Envelope>(409)]
     [ProducesResponseType<Envelope>(500)]
     public async Task<EndpointResult<GetChildrenByParentResponse>> GetChildrenByParent(
-        Guid parentId,
+        [FromRoute] Guid parentId,
         [FromQuery] GetChildrenByParentRequest request,
         [FromServices] GetChildrenByParentHandler handler,
         CancellationToken cancellationToken)
     {
-        var command = new GetChildrenByParentQuery(parentId, request);
+        var query = new GetChildrenByParentQuery(parentId, request);
+        return await handler.Handle(query, cancellationToken);
+    }
+    
+    [HttpDelete("{departmentId:guid}")]
+    [ProducesResponseType<Envelope<Guid>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(404)]
+    [ProducesResponseType<Envelope>(409)]
+    [ProducesResponseType<Envelope>(500)]
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute] Guid departmentId,
+        [FromServices] DeleteByIdHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var deleteByIdRequest = new DeleteByIdRequest(departmentId);
+        var command = new DeleteByIdCommand(deleteByIdRequest);
         return await handler.Handle(command, cancellationToken);
     }
 }

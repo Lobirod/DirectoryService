@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 using Shared;
@@ -15,5 +16,13 @@ public interface ILocationsRepository
 
     Task<Result<bool, Error>> ExistsByIdAsync(
         IReadOnlyCollection<LocationId> locationsId,
+        CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyCollection<LocationId>, Error>> GetExclusiveByDepartmentIdAsync(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyCollection<Location>, Error>> GetByIdsAsync(
+        IEnumerable<LocationId> positionIds,
         CancellationToken cancellationToken);
 }
