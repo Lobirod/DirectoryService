@@ -34,10 +34,10 @@ public class UpdateDepartmentLocationsHandler : ICommandHandler<Result<Guid, Err
     }
 
     public async Task<Result<Guid, Errors>> Handle(
-        UpdateDepartmentLocationsCommand query,
+        UpdateDepartmentLocationsCommand command,
         CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(query, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
@@ -48,7 +48,7 @@ public class UpdateDepartmentLocationsHandler : ICommandHandler<Result<Guid, Err
 
         using var transactionScope = transactionScopeResult.Value;
 
-        var departmentId = new DepartmentId(query.DepartmentId);
+        var departmentId = new DepartmentId(command.DepartmentId);
 
         var departmentResult = await _departmentsRepository.GetByIdAsync(departmentId, cancellationToken);
 
@@ -66,7 +66,7 @@ public class UpdateDepartmentLocationsHandler : ICommandHandler<Result<Guid, Err
             return Error.Validation(null, "Указанное подразделение не активно").ToErrors();
         }
         
-        var locationsId = query.Request.LocationsId.Select(l => new LocationId(l)).ToList();
+        var locationsId = command.Request.LocationsId.Select(l => new LocationId(l)).ToList();
 
         var locationExist = await _locationsRepository.ExistsByIdAsync(locationsId, cancellationToken);
 

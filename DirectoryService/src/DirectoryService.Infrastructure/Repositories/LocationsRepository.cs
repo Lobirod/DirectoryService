@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -72,5 +73,41 @@ public class LocationsRepository : ILocationsRepository
             .CountAsync(cancellationToken);
           
         return existingLocationCount == locationsId.Count;
+    }
+    
+    public async Task<Result<IEnumerable<LocationId>, Error>> GetExclusiveByDepartmentIdAsync(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           SELECT id, department_id, location_id
+                           FROM department_location
+                           WHERE department_id = {0}
+                             AND location_id NOT IN (SELECT location_id
+                                                 FROM department_location
+                                                 WHERE department_id != {0})
+                           """;
+
+        var result = await _dbContext.DepartmentLocations
+            .FromSqlRaw(sql, departmentId.Value)
+            .ToListAsync(cancellationToken);
+
+        var locationIds = result.Select(l => l.LocationId).ToList();
+
+        return locationIds;
+    }
+    
+    public async Task<Result<IEnumerable<Location>, Error>> GetByIdsAsync(
+        IEnumerable<LocationId> positionIds,
+        CancellationToken cancellationToken)
+    {
+        var result = await _dbContext.Locations
+            .Where(l => positionIds.Contains(l.Id))
+            .ToListAsync(cancellationToken);
+
+        if (result.Count == 0)
+            return Error.NotFound(null, "Локации с указанными Id не найдены");
+
+        return result;
     }
 }

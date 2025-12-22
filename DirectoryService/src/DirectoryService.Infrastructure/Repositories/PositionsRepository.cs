@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Positions;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions;
 using DirectoryService.Domain.Positions.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -45,5 +46,41 @@ public class PositionsRepository : IPositionsRepository
             .AnyAsync(p => p.IsActive == true && p.Name == name, cancellationToken);
 
         return exists;
+    }
+    
+    public async Task<Result<IEnumerable<PositionId>, Error>> GetExclusiveByDepartmentIdAsync(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken)
+    {
+        const string sql = """
+                           SELECT id, department_id, position_id
+                           FROM department_position
+                           WHERE department_id = {0}
+                             AND position_id NOT IN (SELECT position_id
+                                                 FROM department_position
+                                                 WHERE department_id != {0})
+                           """;
+
+        var result = await _dbContext.DepartmentPositions
+            .FromSqlRaw(sql, departmentId.Value)
+            .ToListAsync(cancellationToken);
+
+        var positionIds = result.Select(p => p.PositionId).ToList();
+
+        return positionIds;
+    }
+    
+    public async Task<Result<IEnumerable<Position>, Error>> GetByIdsAsync(
+        IEnumerable<PositionId> positionIds,
+        CancellationToken cancellationToken)
+    {
+        var result = await _dbContext.Positions
+            .Where(p => positionIds.Contains(p.Id))
+            .ToListAsync(cancellationToken);
+
+        if (result.Count == 0)
+            return Error.NotFound(null, "Позиции с указанными Id не найдены");
+
+        return result;
     }
 }

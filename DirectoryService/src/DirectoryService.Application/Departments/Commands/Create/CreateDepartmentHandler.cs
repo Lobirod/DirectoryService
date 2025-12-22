@@ -31,22 +31,22 @@ public class CreateDepartmentHandler: ICommandHandler<Result<Guid, Errors>, Crea
         _locationsRepository = locationsRepository;
     }
 
-    public async Task<Result<Guid, Errors>> Handle(CreateDepartmentCommand query, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreateDepartmentCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(query, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
         var departmentId = new DepartmentId(Guid.NewGuid());
 
-        var departmentName = DepartmentName.Create(query.Request.Name).Value;
+        var departmentName = DepartmentName.Create(command.Request.Name).Value;
 
-        var departmentIdentifier = DepartmentIdentifier.Create(query.Request.Identifier).Value;
+        var departmentIdentifier = DepartmentIdentifier.Create(command.Request.Identifier).Value;
 
         DepartmentId? departmentParentId = null;
 
-        if (query.Request.ParentId.HasValue)
-            departmentParentId = new DepartmentId(query.Request.ParentId.Value);
+        if (command.Request.ParentId.HasValue)
+            departmentParentId = new DepartmentId(command.Request.ParentId.Value);
 
         var identifierExist = await _departmentsRepository.ExistsByIdentifierAsync(
             departmentParentId,
@@ -56,7 +56,7 @@ public class CreateDepartmentHandler: ICommandHandler<Result<Guid, Errors>, Crea
         if (identifierExist.Value)
             return Error.Conflict(null, "Указанный идентификатор уже существует").ToErrors();
 
-        var locationsId = query.Request.LocationsId.Select(l => new LocationId(l)).ToList();
+        var locationsId = command.Request.LocationsId.Select(l => new LocationId(l)).ToList();
 
         var locationExist = await _locationsRepository.ExistsByIdAsync(locationsId, cancellationToken);
 

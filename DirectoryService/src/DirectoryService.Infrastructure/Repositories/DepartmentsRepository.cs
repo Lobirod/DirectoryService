@@ -137,7 +137,7 @@ public class DepartmentsRepository : IDepartmentsRepository
     public async Task<UnitResult<Error>> UpdateDescendantsPathAndDepth(
         DepartmentPath newPath,
         DepartmentPath oldPath,
-        int oldDepth,
+        int deltaDepth,
         CancellationToken cancellationToken)
     {
         try
@@ -148,7 +148,7 @@ public class DepartmentsRepository : IDepartmentsRepository
                                        UPDATE departments
                                        SET path = {newPath.Value}::ltree || 
                                        subpath(path, nlevel({oldPath.Value}::ltree)),
-                                       depth = depth + {oldDepth},
+                                       depth = depth + {deltaDepth},
                                        updated_at = {updatedDate}
                                        WHERE path <@ {oldPath.Value}::ltree AND path != {oldPath.Value}::ltree
                                        """;

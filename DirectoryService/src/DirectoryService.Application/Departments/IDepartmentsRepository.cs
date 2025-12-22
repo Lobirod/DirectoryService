@@ -37,6 +37,6 @@ public interface IDepartmentsRepository
     Task<UnitResult<Error>> UpdateDescendantsPathAndDepth(
         DepartmentPath newPath,
         DepartmentPath oldPath,
-        int oldDepth,
+        int deltaDepth,
         CancellationToken cancellationToken);
 }

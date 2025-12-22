@@ -29,10 +29,10 @@ public class MoveDepartmentHandler : ICommandHandler<Result<Guid, Errors>, MoveD
     }
 
     public async Task<Result<Guid, Errors>> Handle(
-        MoveDepartmentCommand query,
+        MoveDepartmentCommand command,
         CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(query, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
@@ -43,13 +43,13 @@ public class MoveDepartmentHandler : ICommandHandler<Result<Guid, Errors>, MoveD
 
         using var transactionScope = transactionScopeResult.Value;
 
-        var departmentId = new DepartmentId(query.DepartmentId);
+        var departmentId = new DepartmentId(command.DepartmentId);
 
         Department? parentDepartment = null;
 
-        if (query.Request.ParentId.HasValue)
+        if (command.Request.ParentId.HasValue)
         {
-            var departmentParentId = new DepartmentId(query.Request.ParentId.Value);
+            var departmentParentId = new DepartmentId(command.Request.ParentId.Value);
 
             if (departmentParentId == departmentId)
             {

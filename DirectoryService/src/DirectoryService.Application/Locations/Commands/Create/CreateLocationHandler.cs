@@ -25,20 +25,20 @@ public class CreateLocationHandler: ICommandHandler<Result<Guid, Errors>, Create
         _validator = validator;
     }
 
-    public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand query, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
     {
-        var validationResult = await _validator.ValidateAsync(query, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
         if (!validationResult.IsValid)
             return validationResult.ToList();
 
-        var locationName = LocationName.Create(query.Request.Name).Value;
+        var locationName = LocationName.Create(command.Request.Name).Value;
 
         var locationAddress = LocationAddress.Create(
-            query.Request.Address.Country,
-            query.Request.Address.City,
-            query.Request.Address.Street).Value;
+            command.Request.Address.Country,
+            command.Request.Address.City,
+            command.Request.Address.Street).Value;
 
-        var locationTimezone = LocationTimezone.Create(query.Request.Timezone).Value;
+        var locationTimezone = LocationTimezone.Create(command.Request.Timezone).Value;
 
         var existsByName = await _locationsRepository.ExistsByNameAsync(locationName, cancellationToken);
         if (existsByName.Value)

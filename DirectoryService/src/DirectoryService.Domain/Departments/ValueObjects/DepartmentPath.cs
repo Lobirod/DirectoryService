@@ -3,6 +3,8 @@
 public record DepartmentPath
 {
     private const char SEPARATOR = '.';
+    
+    private const string DELETED_MARK = "deleted_";
 
     public string Value { get; }
 
@@ -24,5 +26,26 @@ public record DepartmentPath
     public DepartmentPath CreateChildren(DepartmentIdentifier childIdentifier)
     {
         return new DepartmentPath(Value + SEPARATOR + childIdentifier.Value);
+    }
+    
+    public static DepartmentPath SetAsDeleted(string currentPath, DepartmentId? parentId)
+    {
+        string path;
+       
+        if (parentId is null)
+        {
+            path = DELETED_MARK + currentPath;
+        }
+        else
+        {
+            string[] segments = currentPath.Split(SEPARATOR);
+            string updatedSegment = DELETED_MARK + segments.Last();
+            path = string.Join(
+                SEPARATOR,
+                string.Join(SEPARATOR, segments.Take(segments.Length - 1)),
+                updatedSegment);
+        }
+
+        return new DepartmentPath(path);
     }
 }

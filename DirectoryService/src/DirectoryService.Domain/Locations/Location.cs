@@ -42,6 +42,8 @@ public sealed class Location
     public DateTime CreatedAt { get; private set; }
 
     public DateTime? UpdatedAt { get; private set; }
+    
+    public DateTime? DeletedAt { get; private set; }
 
     public IReadOnlyList<DepartmentLocation> DepartmentLocations => _departmentLocations;
 
@@ -52,5 +54,12 @@ public sealed class Location
         LocationId? locationId = null)
     {
         return new Location(locationId ?? new LocationId(Guid.NewGuid()), name, address, timezone);
+    }
+    
+    public void SoftDelete()
+    {   
+        IsActive = false;
+        
+        DeletedAt = DateTime.UtcNow;
     }
 }
