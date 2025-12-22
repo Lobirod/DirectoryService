@@ -101,7 +101,7 @@ public class DeleteByIdHandler : ICommandHandler<Result<Guid, Errors>, DeleteByI
             return unUsedPositionsResult.Error.ToErrors();
         }
         
-        if (unUsedPositionsResult.Value.Any())
+        if (unUsedPositionsResult.Value.Count > 0)
         {
             var positionsResult = await _positionsRepository
                 .GetByIdsAsync(unUsedPositionsResult.Value, cancellationToken);
@@ -126,7 +126,7 @@ public class DeleteByIdHandler : ICommandHandler<Result<Guid, Errors>, DeleteByI
             return unUsedLocationsResult.Error.ToErrors();
         }
         
-        if (unUsedLocationsResult.Value.Any())
+        if (unUsedLocationsResult.Value.Count > 0)
         {
             var locationsResult = await _locationsRepository
                 .GetByIdsAsync(unUsedLocationsResult.Value, cancellationToken);

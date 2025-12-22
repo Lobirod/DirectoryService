@@ -12,11 +12,11 @@ public interface IPositionsRepository
 
     Task<Result<bool, Error>> ExistsByNameAsync(PositionName name, CancellationToken cancellationToken);
 
-    Task<Result<IEnumerable<PositionId>, Error>> GetExclusiveByDepartmentIdAsync(
+    Task<Result<IReadOnlyCollection<PositionId>, Error>> GetExclusiveByDepartmentIdAsync(
         DepartmentId departmentId,
         CancellationToken cancellationToken);
 
-    Task<Result<IEnumerable<Position>, Error>> GetByIdsAsync(
+    Task<Result<IReadOnlyCollection<Position>, Error>> GetByIdsAsync(
         IEnumerable<PositionId> positionIds,
         CancellationToken cancellationToken);
 }

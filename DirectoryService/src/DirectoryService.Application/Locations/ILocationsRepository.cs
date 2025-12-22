@@ -18,11 +18,11 @@ public interface ILocationsRepository
         IReadOnlyCollection<LocationId> locationsId,
         CancellationToken cancellationToken);
 
-    Task<Result<IEnumerable<LocationId>, Error>> GetExclusiveByDepartmentIdAsync(
+    Task<Result<IReadOnlyCollection<LocationId>, Error>> GetExclusiveByDepartmentIdAsync(
         DepartmentId departmentId,
         CancellationToken cancellationToken);
 
-    Task<Result<IEnumerable<Location>, Error>> GetByIdsAsync(
+    Task<Result<IReadOnlyCollection<Location>, Error>> GetByIdsAsync(
         IEnumerable<LocationId> positionIds,
         CancellationToken cancellationToken);
 }

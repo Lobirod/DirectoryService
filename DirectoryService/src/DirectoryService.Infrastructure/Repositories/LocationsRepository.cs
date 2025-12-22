@@ -75,7 +75,7 @@ public class LocationsRepository : ILocationsRepository
         return existingLocationCount == locationsId.Count;
     }
     
-    public async Task<Result<IEnumerable<LocationId>, Error>> GetExclusiveByDepartmentIdAsync(
+    public async Task<Result<IReadOnlyCollection<LocationId>, Error>> GetExclusiveByDepartmentIdAsync(
         DepartmentId departmentId,
         CancellationToken cancellationToken)
     {
@@ -97,7 +97,7 @@ public class LocationsRepository : ILocationsRepository
         return locationIds;
     }
     
-    public async Task<Result<IEnumerable<Location>, Error>> GetByIdsAsync(
+    public async Task<Result<IReadOnlyCollection<Location>, Error>> GetByIdsAsync(
         IEnumerable<LocationId> positionIds,
         CancellationToken cancellationToken)
     {

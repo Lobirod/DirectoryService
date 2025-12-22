@@ -48,7 +48,7 @@ public class PositionsRepository : IPositionsRepository
         return exists;
     }
     
-    public async Task<Result<IEnumerable<PositionId>, Error>> GetExclusiveByDepartmentIdAsync(
+    public async Task<Result<IReadOnlyCollection<PositionId>, Error>> GetExclusiveByDepartmentIdAsync(
         DepartmentId departmentId,
         CancellationToken cancellationToken)
     {
@@ -70,7 +70,7 @@ public class PositionsRepository : IPositionsRepository
         return positionIds;
     }
     
-    public async Task<Result<IEnumerable<Position>, Error>> GetByIdsAsync(
+    public async Task<Result<IReadOnlyCollection<Position>, Error>> GetByIdsAsync(
         IEnumerable<PositionId> positionIds,
         CancellationToken cancellationToken)
     {
