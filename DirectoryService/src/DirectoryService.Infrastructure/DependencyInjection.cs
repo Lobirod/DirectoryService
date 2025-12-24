@@ -4,6 +4,7 @@ using DirectoryService.Application.Abstractions;
 using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
+using DirectoryService.Infrastructure.BackgroundServices;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,10 @@ public static class DependencyInjection
         services.AddScoped<IPositionsRepository, PositionsRepository>();
         
         services.AddScoped<ITransactionManager, TransactionManager>();
+        
+        services.AddScoped<DeleteDepartmentService>();
+        
+        services.AddHostedService<DeleteDepartmentBackgroundService>();
 
         return services;
     }
