@@ -37,41 +37,49 @@ public class DeleteDepartmentService
 
         if (departments.Count > 0)
         {
-            var updateChildResults = new List<UnitResult<Error>>();
+            var parentDepartmentIds = departments.Select(d => d.ParentId).ToList();
+
+            var parentDepartments = await GetParentDepartments(parentDepartmentIds, cancellationToken);
+
+            var departmentIds = departments.Select(d => d.Id).ToList();
+
+            var childrenDepartments = await GetDepartmentsChildren(departmentIds, cancellationToken);
+
             foreach (var department in departments)
             {
-                var departmentId = department.Id.Value;
-                string departmentPath = department.Path.Value;
-                var result = await UpdateChildrenDepartmentPaths(departmentPath, departmentId, cancellationToken);
-                updateChildResults.Add(result);
+                var childrenDepartment = childrenDepartments.Where(c => c.ParentId == department.Id).ToList();
+                
+                foreach (var childDepartment in childrenDepartment)
+                {
+                    var newParent = parentDepartments.FirstOrDefault(p => p.Id == department.ParentId);
 
-                await UpdateChildrenDepartments(department.Id, department.ParentId, cancellationToken);
+                    var moveParentResult = childDepartment.UpdateParent(newParent);
+
+                    if (moveParentResult.IsFailure)
+                    {
+                        transactionScope.Rollback();
+                    }
+                }
             }
-
-            var failedResults = updateChildResults.Where(r => r.IsFailure).ToList();
-            if (failedResults.Count > 0)
-            {
-                transactionScope.Rollback();
-            }
-
+            
             _dbContext.Departments.RemoveRange(departments);
             await _dbContext.SaveChangesAsync(cancellationToken);
         }
-        
+
         var deleteLocationsResult = await DeleteLocations(cancellationToken);
 
         if (deleteLocationsResult.IsFailure)
         {
             transactionScope.Rollback();
         }
-        
+
         var deletePositionsResult = await DeletePositions(cancellationToken);
 
         if (deletePositionsResult.IsFailure)
         {
             transactionScope.Rollback();
         }
-        
+
         await _dbContext.SaveChangesAsync(cancellationToken);
 
         transactionScope.Commit();
@@ -87,14 +95,26 @@ public class DeleteDepartmentService
         return departments;
     }
 
-    private async Task UpdateChildrenDepartments(
-        DepartmentId departmentId,
-        DepartmentId? parentId,
+    private async Task<IReadOnlyCollection<Department>> GetParentDepartments(
+        IEnumerable<DepartmentId?> parentDepartmentIds,
         CancellationToken cancellationToken)
     {
-        await _dbContext.Departments
-            .Where(d => d.ParentId == departmentId)
-            .ExecuteUpdateAsync(setters => setters.SetProperty(d => d.ParentId, parentId), cancellationToken);
+        var parentDepartments = await _dbContext.Departments
+            .Where(d => parentDepartmentIds.Contains(d.Id))
+            .ToListAsync(cancellationToken);
+
+        return parentDepartments;
+    }
+    
+    private async Task<IReadOnlyCollection<Department>> GetDepartmentsChildren(
+        IEnumerable<DepartmentId> parentDepartmentIds,
+        CancellationToken cancellationToken)
+    {
+        var childrenDepartments = await _dbContext.Departments
+            .Where(d => parentDepartmentIds.Contains(d.ParentId))
+            .ToListAsync(cancellationToken);
+
+        return childrenDepartments;
     }
 
     private async Task<UnitResult<Error>> DeleteLocations(CancellationToken cancellationToken)
@@ -103,13 +123,13 @@ public class DeleteDepartmentService
         {
             await _dbContext.Database.ExecuteSqlRawAsync(
                 """
-                 DELETE FROM locations l
-                 WHERE l.is_active = false
-                 AND not exists(
-                     SELECT 1
-                     from department_location dl
-                     WHERE dl.location_id = l.id)
-                 """,
+                DELETE FROM locations l
+                WHERE l.is_active = false
+                AND not exists(
+                    SELECT 1
+                    from department_location dl
+                    WHERE dl.location_id = l.id)
+                """,
                 cancellationToken);
             return UnitResult.Success<Error>();
         }
@@ -119,7 +139,7 @@ public class DeleteDepartmentService
             return Error.Failure("delete.location", "Ошибка удаления не активных локаций");
         }
     }
-    
+
     private async Task<UnitResult<Error>> DeletePositions(CancellationToken cancellationToken)
     {
         try
@@ -140,31 +160,6 @@ public class DeleteDepartmentService
         {
             _logger.LogError(e, "Ошибка удаления не активных позиций");
             return Error.Failure("delete.position", "Ошибка удаления не активных позиций");
-        }
-    }
-
-    private async Task<UnitResult<Error>> UpdateChildrenDepartmentPaths(
-        string oldPath, Guid newDepartmentId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            await _dbContext.Database.ExecuteSqlAsync(
-                $"""
-                 UPDATE departments
-                 SET path = subpath(path, 0, nlevel({oldPath}::ltree) - 1) 
-                                || subpath(path, nlevel({oldPath}::ltree)),
-                     depth = nlevel(path::ltree) - 1,
-                     updated_at = now()
-                 WHERE path <@ {oldPath}::ltree AND PATH != {oldPath}::ltree
-                 """,
-                cancellationToken);
-            return UnitResult.Success<Error>();
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e, "Ошибка обновления дочерних подразделений у родителя {newDepartmentId}",
-                newDepartmentId);
-            return Error.Failure("update.department", "Ошибка обновления дочерних подразделений");
         }
     }
 }
